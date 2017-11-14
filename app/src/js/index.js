@@ -9,8 +9,17 @@ class Appwrapper extends React.Component{
         super(props);
         this.state = {
             iData: '',
-            iList: []
+            iList: [],
+            counter: -1
         }
+    }
+    /** Event
+     * What? - When Component Mounts initialize the counter.
+     */
+    componentWillMount(){
+        this.setState({
+            counter: this.state.iList.length - 1
+        })
     }
     /** Event
      * What? - Input on Change
@@ -28,12 +37,13 @@ class Appwrapper extends React.Component{
      */
     handleFormSubmit(e){
         e.preventDefault();
-        const data = Object.assign({}, {item:this.state.iData, toggled:false});
-        this.setState( (prevState, props) => ({
-            iList: [...prevState.iList, data]
-        }), () => {
-            //console.log("You Entered ", this.state.iList);
-        });
+            const data = Object.assign({}, {item:this.state.iData, toggled:false});
+            this.setState( (prevState, props) => ({
+                iList: [...prevState.iList, data],
+                counter: this.state.counter + 1
+            }), () => {
+                console.log("You Entered ", this.state);
+            });
     }
     /** Event
      * What? - On List Item Click - Toggle StrikeThrough
@@ -50,7 +60,7 @@ class Appwrapper extends React.Component{
         // }
         const eleKey = parseInt(e.target.dataset.key, 10);
         const iList = this.state.iList;
-        iList.map( (item, key) => {
+        /*iList.map( (item, key) => {
             debugger;
             if(key === eleKey){
                 const data = Object.assign({}, item, {toggled: !item.toggled});
@@ -61,6 +71,12 @@ class Appwrapper extends React.Component{
                     //e.target.className = (e.target.className == '' ? 'strike-through' : '');
                 });
             }
+        });*/
+        const itemObj = iList[eleKey];
+        itemObj['toggled'] = true;
+        const modifiedObj = Object.assign({}, itemObj);
+        this.setState((prevState, props) => {
+            iList: []
         });
     }
     render(){
