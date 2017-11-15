@@ -9,17 +9,8 @@ class Appwrapper extends React.Component{
         super(props);
         this.state = {
             iData: '',
-            iList: [],
-            counter: -1
+            iList: []
         }
-    }
-    /** Event
-     * What? - When Component Mounts initialize the counter.
-     */
-    componentWillMount(){
-        this.setState({
-            counter: this.state.iList.length - 1
-        })
     }
     /** Event
      * What? - Input on Change
@@ -28,8 +19,6 @@ class Appwrapper extends React.Component{
         e.preventDefault();
         this.setState({
             iData:e.target.value
-        }, () => {
-            console.log('I have got Input and set State too', this.state.iData);
         });
     }
     /** Event
@@ -37,46 +26,36 @@ class Appwrapper extends React.Component{
      */
     handleFormSubmit(e){
         e.preventDefault();
-            const data = Object.assign({}, {item:this.state.iData, toggled:false});
-            this.setState( (prevState, props) => ({
-                iList: [...prevState.iList, data],
-                counter: this.state.counter + 1
-            }), () => {
-                console.log("You Entered ", this.state);
-            });
+        const data = Object.assign({}, {item:this.state.iData, toggled:false});
+        this.setState( (prevState, props) => ({
+            iList: [...prevState.iList, data]
+        }), () => {
+            //console.log("You Entered ", this.state.iList);
+        });
     }
     /** Event
      * What? - On List Item Click - Toggle StrikeThrough
      */
     handleItemClick(e){
         e.preventDefault();
-        //console.log(e.target.dataset.strike);
-        // if(e.target.dataset.strike === 'off'){
-        //     e.target.dataset.strike = 'on';
-        //     e.target.className = 'strike-through';
-        // }else{
-        //     e.target.dataset.strike = 'off';
-        //     e.target.className = '';
-        // }
+        e.persist();
+        
         const eleKey = parseInt(e.target.dataset.key, 10);
         const iList = this.state.iList;
-        /*iList.map( (item, key) => {
-            debugger;
-            if(key === eleKey){
-                const data = Object.assign({}, item, {toggled: !item.toggled});
-                this.setState((prevState, props) => {
-                iList: [...prevState.iList, data]
-                }, () => {
-                    console.log(this.state);
-                    //e.target.className = (e.target.className == '' ? 'strike-through' : '');
-                });
-            }
-        });*/
-        const itemObj = iList[eleKey];
-        itemObj['toggled'] = true;
-        const modifiedObj = Object.assign({}, itemObj);
+        const item = iList[eleKey];
+        item['toggled'] = ! item['toggled'];
         this.setState((prevState, props) => {
-            iList: []
+            iList: [
+                iList.slice(0, eleKey),
+                item,
+                iList.slice(eleKey)
+            ]
+        }, () => {
+            if(e.target.classList.contains('strike-through')){
+                e.target.className = '';
+            }else{
+                e.target.className = 'strike-through';
+            }
         });
     }
     render(){
